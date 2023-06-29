@@ -1,16 +1,20 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const app = express();
+const bodyParser = require('body-parser');
+
 
 //config dotenv to read environment variables from .env file
 dotenv.config();
 
 
+app.use(bodyParser.json());
+
 const port = process.env.PORT;
 
 
 //initialize mongo driver, define database
-const { MongoClient } = require('mongodb');
+const { MongoClient, Collection } = require('mongodb');
 
 //mongo connections properties
 const username = process.env.ATLAS_USER;
@@ -50,6 +54,28 @@ app.get('/', (req, res) => {
     res.send('todo api works!');
 });
 
+
+
+
+app.post('/createTask', (req, res) =>{
+
+    async function createTask(){
+
+        const newTask = req.body.task;
+
+        taskCollection = await db.collection("task");
+
+        let result = await taskCollection.insertOne(newTask);
+
+        res.send(result).status(200);
+
+    }
+
+    createTask().catch( (error) => {
+        console.log(error);
+    });
+
+});
 
 
 app.listen(port, ()=>{
