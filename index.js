@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const app = express();
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 
 //config dotenv to read environment variables from .env file
@@ -9,6 +10,7 @@ dotenv.config();
 
 
 app.use(bodyParser.json());
+app.use(cors());
 
 const port = process.env.PORT;
 
@@ -61,6 +63,10 @@ app.post('/createTask', (req, res) =>{
 
     async function createTask(){
 
+
+
+        console.log(req.body);
+
         const newTask = req.body.task;
 
         taskCollection = await db.collection("task");
@@ -76,6 +82,19 @@ app.post('/createTask', (req, res) =>{
     });
 
 });
+
+
+app.get('/getTasks', (req, res) => {
+    async function getTasks(){
+
+    }
+
+    getTasks().catch((error) => {
+        
+        res.status(500).send("there was an error getting tasks : "+error);
+        console.log(error);
+    })
+})
 
 
 app.listen(port, ()=>{
