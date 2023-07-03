@@ -87,6 +87,19 @@ app.post('/createTask', (req, res) =>{
 app.get('/getTasks', (req, res) => {
     async function getTasks(){
 
+        const user = req.body.user;
+
+        const userCollection = db.collection("user");
+
+        const userFound = await userCollection.findOne({ username : user.username });
+
+        const taskCollection = db.collection("task");
+
+        const tasksFound = await taskCollection.find({ user: userFound._id }).toArray();
+
+        console.log(tasksFound);
+
+        res.status(200).send({ value : tasksFound });
     }
 
     getTasks().catch((error) => {
@@ -94,7 +107,34 @@ app.get('/getTasks', (req, res) => {
         res.status(500).send("there was an error getting tasks : "+error);
         console.log(error);
     })
-})
+});
+
+
+app.post('/registerUser', (req, res) => {
+
+
+    async function registerUser(){
+        const userCollection = db.collection("user");
+
+        const user = req.body.user;
+
+        const userSaved = userCollection.insertOne(user);
+
+        if(userSaved.acknowledge){
+            res.status(200).send(userSaved);
+        }
+    }
+
+    registerUser().catch(
+        (error) => {
+            console.log(error);
+            res.status(500).send("there was an error registering user : "+error);
+        }
+    );
+});
+
+
+
 
 
 app.listen(port, ()=>{
