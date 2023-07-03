@@ -35,8 +35,8 @@ async function runMongo(){
     conn = await client.connect();
 }
 
-runMongo().then(()=>{
-        db = conn.db("todo-db");
+runMongo().then(async function(){
+        db = await conn.db("todo-db");
     }).catch(
     error => {
         console.log(error);
@@ -89,11 +89,11 @@ app.get('/getTasks', (req, res) => {
 
         const user = req.body.user;
 
-        const userCollection = db.collection("user");
+        const userCollection = await db.collection("user");
 
         const userFound = await userCollection.findOne({ username : user.username });
 
-        const taskCollection = db.collection("task");
+        const taskCollection = await db.collection("task");
 
         const tasksFound = await taskCollection.find({ user: userFound._id }).toArray();
 
@@ -114,11 +114,17 @@ app.post('/registerUser', (req, res) => {
 
 
     async function registerUser(){
-        const userCollection = db.collection("user");
+        
+        userCollection = await db.collection("user");
+
+
+        console.log(req.body);
 
         const user = req.body.user;
 
-        const userSaved = userCollection.insertOne(user);
+        console.log(user);
+
+        const userSaved = await userCollection.insertOne(user);
 
         if(userSaved.acknowledge){
             res.status(200).send(userSaved);
