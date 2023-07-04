@@ -140,6 +140,31 @@ app.post('/registerUser', (req, res) => {
 });
 
 
+app.get("/usernameExists", (req, res) => {
+    async function usernameExists(){
+
+
+        const reqUsername = req.query.username;
+
+        const userCollection = await db.collection("user");
+
+        const userfound = await userCollection.findOne({ username : reqUsername });
+
+        console.log(userfound);
+
+        if(userfound._id){
+            res.status(200).send(userfound);
+        }
+
+    }
+
+    usernameExists().catch( (err) => {
+        console.log(err);
+
+        res.status(500).send("there was an error serching for username : "+err);
+    })
+});
+
 
 
 
